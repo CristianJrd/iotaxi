@@ -1,55 +1,42 @@
-'use strict';
+// import jwt from 'jsonwebtoken';
+// import User from '../models/users';
 
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.createToken = undefined;
+// const expiresIn = "1d";
+// const secret = "samplejwtiotaxi";
+// const tokenPrefix = "JWT";
 
-var _jsonwebtoken = require('jsonwebtoken');
+// export const createToken = function (email,password){
+//     if(!email || !password) {
+//         return false
+//     }
 
-var _jsonwebtoken2 = _interopRequireDefault(_jsonwebtoken);
+//     console.log(email,password)
 
-var _users = require('../models/users');
+//     const compare = new Promise((resolve,reject) => {
+//         User.findOne({'email':email}).then((user) => {
+//             console.log(user);
+//             if(!user) reject(false)
+//             user.comparePassword(password,function (err,isMatch){
+//                 console.log(isMatch);
+//                 if(isMatch){
+//                     let payload = {
+//                         name:user.name,
+//                         admin:user.is_admin,
+//                         email:user.email,
+//                         id:user._id
+//                     }
+//                     const token = jwt.sign(payload,secret,{expiresIn});
 
-var _users2 = _interopRequireDefault(_users);
+//                     resolve(token)
+//                 }else{
+//                     reject(false)
+//                 }
+//             })
+//         }).catch((err) => {
+//             return err
+//         });
+//     });
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var expiresIn = "1d";
-var secret = "samplejwtiotaxi";
-var tokenPrefix = "JWT";
-
-var createToken = exports.createToken = function createToken(email, password) {
-    if (!email || !password) {
-        return false;
-    }
-
-    console.log(email, password);
-
-    var compare = new Promise(function (resolve, reject) {
-        _users2.default.findOne({ 'email': email }).then(function (user) {
-            console.log(user);
-            if (!user) reject(false);
-            user.comparePassword(password, function (err, isMatch) {
-                console.log(isMatch);
-                if (isMatch) {
-                    var payload = {
-                        name: user.name,
-                        admin: user.is_admin,
-                        email: user.email,
-                        id: user._id
-                    };
-                    var token = _jsonwebtoken2.default.sign(payload, secret, { expiresIn: expiresIn });
-
-                    resolve(token);
-                } else {
-                    reject(false);
-                }
-            });
-        }).catch(function (err) {
-            return err;
-        });
-    });
-
-    return compare;
-};
+//     return compare
+// }
+"use strict";

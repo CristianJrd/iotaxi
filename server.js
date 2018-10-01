@@ -7,8 +7,8 @@ import Message from './src/models/messages';
 import Device from './src/models/devices';
 import graphQLHTTP from 'express-graphql';
 import schema from './src/graphql';
-import {createToken} from './src/resolvers/create'
-import {verifyToken} from './src/resolvers/verify'
+/* import {createToken} from './src/resolvers/create'
+import {verifyToken} from './src/resolvers/verify' */
 import timestampToDate from 'date-from-timestamp'
 
 let bandera = false;
@@ -40,7 +40,7 @@ db.on('error',()=> console.log("Error al conectar a la BD"))
 app.use(bodyParser.json());
 app.use(cors());
 
-app.post('/signup',(req,res) => {
+/* app.post('/signup',(req,res) => {
     let user = req.body
     User.create(user).then((user) => {
         return res.status(201).json({"message":"Usuario Creado",
@@ -60,17 +60,13 @@ app.post('/login', (req,res) => {
             message:"Login Failed!!!! :( Invalid credentials"
         })
     })
-})
+}) */
 
 app.post('/createMessage',(req,res) => {
-
-    User.findByIdAndUpdate(message.device,{$push:{devices:message.timestamp}},(err,user) => {
-        return user;
-    })
-
-
     let message = req.body
     console.log(message)
+    let dev = null
+    
     Message.create(message).then((message) => {
         console.log(message.timestamp,"aqui chido")
         let hora = Unix_timestamp(message.timestamp);
@@ -78,7 +74,7 @@ app.post('/createMessage',(req,res) => {
 
         if(hora>= '4:00' && hora <='5:00'){
             console.log("ENTRO RESET")
-            Device.findByIdAndUpdate(message.device,{$set:{contEfectivo:0, contKm:0, contTime:0, contTravel:0}},(err,dev) => {
+            Device.findOneAndUpdate({sigfox:message.device},{$set:{contEfectivo:0, contKm:0, contTime:0, contTravel:0}},(err,dev) => {
                 return dev
             })
         }
@@ -92,13 +88,15 @@ app.post('/createMessage',(req,res) => {
                 let km = Number(message.data.substr(6,3));
                 let time = Number(message.data.substr(9,3));
                 console.log(cash,",",km,",",time)
-                Device.findByIdAndUpdate(message.device,{$inc:{contEfectivo:cash, contKm:km, contTime:time, contTravel:1}},(err,dev) => {
+                
+
+                Device.findOneAndUpdate({sigfox:message.device},{$inc:{contEfectivo:cash, contKm:km, contTime:time, contTravel:1}},(err,dev) => {
                     return dev
                 })
                 console.log("salio")
 
             }else{
-                Device.findByIdAndUpdate(message.device,{$set:{lastLocation:message.data}},(err,dev) => {
+                Device.findOneAndUpdate({sigfox:message.device},{$set:{lastLocation:message.data}}, (err,dev) => {
                     return dev
                 })
             }
@@ -110,10 +108,59 @@ app.post('/createMessage',(req,res) => {
     }) 
 })
 
+/* app.post('/updateMe',(req,res) => {
+    let user = req.body
+    console.log(user)
+    User.findByIdAndUpdate(user._id,{$set:{
+        street:user.street, district:user.district, 
+        image_url:user.image_url, 
+        numExt:user.numExt, 
+        numInt:user.numInt, 
+        city:user.city, 
+        country:user.country, 
+        cc:user.cc, 
+        telefono:user.tel}}).then((user) => {
+            return res.status(200).json({"message":"Perfil Actualizado","id":user._id})
+        }).catch((err) => {
+            console.log(err);
+            return res.json(err)
+        })
+}) */
+
+app.post('/updateDevice',(req,res) => {
+    let device = req.body
+    console.log(device)
+    Device.findByIdAndUpdate(device._id,{$set:{conductorFullName:device.conductorFullName,
+    concesion:device.concesion,
+    conductorAddress:device.conductorAddress,
+    conductorDistrict:device.conductorDistrict,
+    conductorNumExt:device.conductorNumExt,
+    conductorNumInt:device.conductorNumInt,
+    conductorTel:device.conductorTel,
+    marcaVehicle:device.marcaVehicle,
+    modeloVehicle:device.modeloVehicle,
+    placaVehicle:device.placaVehicle,
+    image_url_conductor:device.image_url_conductor,
+    image_url_fvehicle:device.image_url_fvehicle,
+    image_url_lvehicle:device.image_url_lvehicle,
+    image_url_rvehicle:device.image_url_rvehicle,
+    image_url_bvehicle:device.image_url_bvehicle,
+    }}).then((device) => {
+        return res.status(200).json({"message":"Dispositivo Actualizado","id":device._id})
+    }).catch((err) => {
+        console.log(err);
+        return res.json(err)
+    })
+})
+
 app.post('/addDevice',(req,res) => {
     let device = req.body
     console.log(device)
     Device.create(device).then((device) => {
+        User.findByIdAndUpdate(device.user,{$push:{devices:device._id}}, (err,user) =>{
+            console.log(user)
+        })
+        console.log(device.user)
         return res.status(201).json({"message":"Dispositivo Creado","id":device._id})
     }).catch((err)=>{
         console.log(err);
@@ -122,7 +169,28 @@ app.post('/addDevice',(req,res) => {
         
 })
 
+/* app.post("/me",(req,res) => {
+    let me = req.body
+    console.log(me)
+    
+    User.findById(me.id,{select:'devices'}).populate('devices').then((user) => {
+        console.log(user)
+        return user
+    }).catch((err) =>{
+        return res.json(err)
+    })
+}) */
 
+
+app.use('/graphql',(req,res,next) => {
+    // const token  = req.headers['authorization'];
+    try{
+        // req.user = verifyToken(token)
+        next();
+    }catch(error){
+        res.status(401).json({message:error.message})
+    }
+})
 
 app.use('/graphql',graphQLHTTP((req,res)=>({
     schema,

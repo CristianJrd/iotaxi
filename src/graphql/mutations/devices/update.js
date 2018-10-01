@@ -1,4 +1,4 @@
-import {
+/* import {
     GraphQLNonNull,
     GraphQLID
 } from 'graphql'
@@ -25,4 +25,4 @@ export default {
             throw new Error("Error al hacer update")
         })
     }
-}
+} */

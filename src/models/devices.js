@@ -3,15 +3,20 @@ import mongoose from 'mongoose';
 const Schema = mongoose.Schema
 
 const DeviceSchema = new Schema({
-    "_id":{
+    "sigfox":{
         type:String,
-        required:true
+        required:true,
+        unique:true
+    },
+    "concesion":{
+        type:String,
+        required:true,
+        unique:true
     },
     "name":{
         type:String,
         required:true
     },
-
     "marcaVehicle":{
         type:String
     },
@@ -19,6 +24,21 @@ const DeviceSchema = new Schema({
         type:String
     },
     "placaVehicle":{
+        type:String
+    },
+    "image_url_fvehicle":{
+        type:String
+    },
+    "image_url_lvehicle":{
+        type:String
+    },
+    "image_url_rvehicle":{
+        type:String
+    },
+    "image_url_bvehicle":{
+        type:String
+    },
+    "image_url_conductor":{
         type:String
     },
     "conductorFullName":{
@@ -39,7 +59,6 @@ const DeviceSchema = new Schema({
     "conductorTel":{
         type:String
     },
-
     "lastLocation":{
         type:String
     },
@@ -58,10 +77,6 @@ const DeviceSchema = new Schema({
     "contEfectivo":{
         type:Number,
         default:0
-    },
-    "user":{
-        type:Schema.Types.ObjectId,
-        ref:'Users'
     },
     "create_at":{
         type:Date,

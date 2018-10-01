@@ -8,8 +8,6 @@ import {
     GraphQLBoolean,
     GraphQLNonNull
 } from 'graphql'
-import {UserType} from './users';
-import User from '../../models/users';
 
 export const DeviceType = new GraphQLObjectType({
     name:"ListDevices",
@@ -17,6 +15,12 @@ export const DeviceType = new GraphQLObjectType({
     fields: () => ({
         _id:{
             type:GraphQLNonNull(GraphQLID)
+        },
+        sigfox:{
+            type:GraphQLString
+        },
+        concesion:{
+            type:GraphQLString
         },
         name:{
             type:GraphQLString
@@ -29,6 +33,21 @@ export const DeviceType = new GraphQLObjectType({
             type:GraphQLString
         },
         placaVehicle:{
+            type:GraphQLString
+        },
+        image_url_fvehicle:{
+            type:GraphQLString
+        },
+        image_url_lvehicle:{
+            type:GraphQLString
+        },
+        image_url_rvehicle:{
+            type:GraphQLString
+        },
+        image_url_bvehicle:{
+            type:GraphQLString
+        },
+        image_url_conductor:{
             type:GraphQLString
         },
         conductorFullName:{
@@ -65,13 +84,7 @@ export const DeviceType = new GraphQLObjectType({
         contEfectivo:{
             type:GraphQLFloat
         },
-        user:{
-            type:UserType,
-            resolve(device){
-                const {user} = device
-                return User.findById(user).exec()
-            }
-        },
+
         create_at:{
             type:GraphQLString
         },
@@ -87,13 +100,13 @@ export const DeviceInputType = new GraphQLInputObjectType({
     name:"addDevices",
     description:"Agrega o modifica dispositivos en la bd",
     fields: () => ({
-        _id:{
+        sigfox:{
+            type:GraphQLString
+        },
+        concesion:{
             type:GraphQLString
         },
         name:{
-            type:GraphQLString
-        },
-        user:{
             type:GraphQLString
         },
 
@@ -104,6 +117,21 @@ export const DeviceInputType = new GraphQLInputObjectType({
             type:GraphQLString
         },
         placaVehicle:{
+            type:GraphQLString
+        },
+        image_url_fvehicle:{
+            type:GraphQLString
+        },
+        image_url_lvehicle:{
+            type:GraphQLString
+        },
+        image_url_rvehicle:{
+            type:GraphQLString
+        },
+        image_url_bvehicle:{
+            type:GraphQLString
+        },
+        image_url_conductor:{
             type:GraphQLString
         },
         conductorFullName:{

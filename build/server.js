@@ -36,10 +36,6 @@ var _graphql = require('./src/graphql');
 
 var _graphql2 = _interopRequireDefault(_graphql);
 
-var _create = require('./src/resolvers/create');
-
-var _verify = require('./src/resolvers/verify');
-
 var _dateFromTimestamp = require('date-from-timestamp');
 
 var _dateFromTimestamp2 = _interopRequireDefault(_dateFromTimestamp);
@@ -47,6 +43,9 @@ var _dateFromTimestamp2 = _interopRequireDefault(_dateFromTimestamp);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var bandera = false;
+/* import {createToken} from './src/resolvers/create'
+import {verifyToken} from './src/resolvers/verify' */
+
 var ultimoFolio = void 0;
 
 function Unix_timestamp(t) {
@@ -77,35 +76,33 @@ db.on('error', function () {
 app.use(_bodyParser2.default.json());
 app.use((0, _cors2.default)());
 
-app.post('/signup', function (req, res) {
-    var user = req.body;
-    _users2.default.create(user).then(function (user) {
-        return res.status(201).json({ "message": "Usuario Creado",
-            "id": user._id });
-    }).catch(function (err) {
+/* app.post('/signup',(req,res) => {
+    let user = req.body
+    User.create(user).then((user) => {
+        return res.status(201).json({"message":"Usuario Creado",
+            "id":user._id})
+    }).catch((err) =>{
         console.log(err);
         return res.json(err);
-    });
+    })
 });
 
-app.post('/login', function (req, res) {
-    var token = (0, _create.createToken)(req.body.email, req.body.password).then(function (token) {
-        res.status(201).json({ token: token });
-    }).catch(function () {
+
+app.post('/login', (req,res) => {
+    const token  = createToken(req.body.email,req.body.password).then((token) => {
+        res.status(201).json({token});
+    }).catch(() => {
         res.status(403).json({
-            message: "Login Failed!!!! :( Invalid credentials"
-        });
-    });
-});
+            message:"Login Failed!!!! :( Invalid credentials"
+        })
+    })
+}) */
 
 app.post('/createMessage', function (req, res) {
-
-    _users2.default.findByIdAndUpdate(message.device, { $push: { devices: message.timestamp } }, function (err, user) {
-        return user;
-    });
-
     var message = req.body;
     console.log(message);
+    var dev = null;
+
     _messages2.default.create(message).then(function (message) {
         console.log(message.timestamp, "aqui chido");
         var hora = Unix_timestamp(message.timestamp);
@@ -113,7 +110,7 @@ app.post('/createMessage', function (req, res) {
 
         if (hora >= '4:00' && hora <= '5:00') {
             console.log("ENTRO RESET");
-            _devices2.default.findByIdAndUpdate(message.device, { $set: { contEfectivo: 0, contKm: 0, contTime: 0, contTravel: 0 } }, function (err, dev) {
+            _devices2.default.findOneAndUpdate({ sigfox: message.device }, { $set: { contEfectivo: 0, contKm: 0, contTime: 0, contTravel: 0 } }, function (err, dev) {
                 return dev;
             });
         }
@@ -127,12 +124,13 @@ app.post('/createMessage', function (req, res) {
                 var km = Number(message.data.substr(6, 3));
                 var time = Number(message.data.substr(9, 3));
                 console.log(cash, ",", km, ",", time);
-                _devices2.default.findByIdAndUpdate(message.device, { $inc: { contEfectivo: cash, contKm: km, contTime: time, contTravel: 1 } }, function (err, dev) {
+
+                _devices2.default.findOneAndUpdate({ sigfox: message.device }, { $inc: { contEfectivo: cash, contKm: km, contTime: time, contTravel: 1 } }, function (err, dev) {
                     return dev;
                 });
                 console.log("salio");
             } else {
-                _devices2.default.findByIdAndUpdate(message.device, { $set: { lastLocation: message.data } }, function (err, dev) {
+                _devices2.default.findOneAndUpdate({ sigfox: message.device }, { $set: { lastLocation: message.data } }, function (err, dev) {
                     return dev;
                 });
             }
@@ -144,15 +142,86 @@ app.post('/createMessage', function (req, res) {
     });
 });
 
+/* app.post('/updateMe',(req,res) => {
+    let user = req.body
+    console.log(user)
+    User.findByIdAndUpdate(user._id,{$set:{
+        street:user.street, district:user.district, 
+        image_url:user.image_url, 
+        numExt:user.numExt, 
+        numInt:user.numInt, 
+        city:user.city, 
+        country:user.country, 
+        cc:user.cc, 
+        telefono:user.tel}}).then((user) => {
+            return res.status(200).json({"message":"Perfil Actualizado","id":user._id})
+        }).catch((err) => {
+            console.log(err);
+            return res.json(err)
+        })
+}) */
+
+app.post('/updateDevice', function (req, res) {
+    var device = req.body;
+    console.log(device);
+    _devices2.default.findByIdAndUpdate(device._id, { $set: { conductorFullName: device.conductorFullName,
+            concesion: device.concesion,
+            conductorAddress: device.conductorAddress,
+            conductorDistrict: device.conductorDistrict,
+            conductorNumExt: device.conductorNumExt,
+            conductorNumInt: device.conductorNumInt,
+            conductorTel: device.conductorTel,
+            marcaVehicle: device.marcaVehicle,
+            modeloVehicle: device.modeloVehicle,
+            placaVehicle: device.placaVehicle,
+            image_url_conductor: device.image_url_conductor,
+            image_url_fvehicle: device.image_url_fvehicle,
+            image_url_lvehicle: device.image_url_lvehicle,
+            image_url_rvehicle: device.image_url_rvehicle,
+            image_url_bvehicle: device.image_url_bvehicle
+        } }).then(function (device) {
+        return res.status(200).json({ "message": "Dispositivo Actualizado", "id": device._id });
+    }).catch(function (err) {
+        console.log(err);
+        return res.json(err);
+    });
+});
+
 app.post('/addDevice', function (req, res) {
     var device = req.body;
     console.log(device);
     _devices2.default.create(device).then(function (device) {
+        _users2.default.findByIdAndUpdate(device.user, { $push: { devices: device._id } }, function (err, user) {
+            console.log(user);
+        });
+        console.log(device.user);
         return res.status(201).json({ "message": "Dispositivo Creado", "id": device._id });
     }).catch(function (err) {
         console.log(err);
         return res.json(err);
     });
+});
+
+/* app.post("/me",(req,res) => {
+    let me = req.body
+    console.log(me)
+    
+    User.findById(me.id,{select:'devices'}).populate('devices').then((user) => {
+        console.log(user)
+        return user
+    }).catch((err) =>{
+        return res.json(err)
+    })
+}) */
+
+app.use('/graphql', function (req, res, next) {
+    // const token  = req.headers['authorization'];
+    try {
+        // req.user = verifyToken(token)
+        next();
+    } catch (error) {
+        res.status(401).json({ message: error.message });
+    }
 });
 
 app.use('/graphql', (0, _expressGraphql2.default)(function (req, res) {

@@ -1,19 +1,11 @@
-'use strict';
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
 exports.DeviceInputType = exports.DeviceType = undefined;
 
-var _graphql = require('graphql');
-
-var _users = require('./users');
-
-var _users2 = require('../../models/users');
-
-var _users3 = _interopRequireDefault(_users2);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _graphql = require("graphql");
 
 var DeviceType = exports.DeviceType = new _graphql.GraphQLObjectType({
     name: "ListDevices",
@@ -22,6 +14,12 @@ var DeviceType = exports.DeviceType = new _graphql.GraphQLObjectType({
         return {
             _id: {
                 type: (0, _graphql.GraphQLNonNull)(_graphql.GraphQLID)
+            },
+            sigfox: {
+                type: _graphql.GraphQLString
+            },
+            concesion: {
+                type: _graphql.GraphQLString
             },
             name: {
                 type: _graphql.GraphQLString
@@ -34,6 +32,21 @@ var DeviceType = exports.DeviceType = new _graphql.GraphQLObjectType({
                 type: _graphql.GraphQLString
             },
             placaVehicle: {
+                type: _graphql.GraphQLString
+            },
+            image_url_fvehicle: {
+                type: _graphql.GraphQLString
+            },
+            image_url_lvehicle: {
+                type: _graphql.GraphQLString
+            },
+            image_url_rvehicle: {
+                type: _graphql.GraphQLString
+            },
+            image_url_bvehicle: {
+                type: _graphql.GraphQLString
+            },
+            image_url_conductor: {
                 type: _graphql.GraphQLString
             },
             conductorFullName: {
@@ -70,14 +83,7 @@ var DeviceType = exports.DeviceType = new _graphql.GraphQLObjectType({
             contEfectivo: {
                 type: _graphql.GraphQLFloat
             },
-            user: {
-                type: _users.UserType,
-                resolve: function resolve(device) {
-                    var user = device.user;
 
-                    return _users3.default.findById(user).exec();
-                }
-            },
             create_at: {
                 type: _graphql.GraphQLString
             },
@@ -95,13 +101,13 @@ var DeviceInputType = exports.DeviceInputType = new _graphql.GraphQLInputObjectT
     description: "Agrega o modifica dispositivos en la bd",
     fields: function fields() {
         return {
-            _id: {
+            sigfox: {
+                type: _graphql.GraphQLString
+            },
+            concesion: {
                 type: _graphql.GraphQLString
             },
             name: {
-                type: _graphql.GraphQLString
-            },
-            user: {
                 type: _graphql.GraphQLString
             },
 
@@ -112,6 +118,21 @@ var DeviceInputType = exports.DeviceInputType = new _graphql.GraphQLInputObjectT
                 type: _graphql.GraphQLString
             },
             placaVehicle: {
+                type: _graphql.GraphQLString
+            },
+            image_url_fvehicle: {
+                type: _graphql.GraphQLString
+            },
+            image_url_lvehicle: {
+                type: _graphql.GraphQLString
+            },
+            image_url_rvehicle: {
+                type: _graphql.GraphQLString
+            },
+            image_url_bvehicle: {
+                type: _graphql.GraphQLString
+            },
+            image_url_conductor: {
                 type: _graphql.GraphQLString
             },
             conductorFullName: {
